@@ -1,26 +1,26 @@
+from huggingface_hub import hf_hub_download
+import joblib
 import streamlit as st
-# import joblib
-# import pandas as pd
 
-# 1. Load your model once and cache it so the app stays fast!
-# @st.cache_resource
-# def load_model():
-#     return joblib.load("model.pkl")
-# model = load_model()
+st.title("🚀 Sliding Threshold Model App")
 
-# 2. Build the User Interface
-st.title("🚀 My Colab App")
-st.write("Enter your details below to get a result:")
 
-# Create input fields
-user_text = st.text_input("Enter some text:", "Hello World")
-user_number = st.number_input("Enter a number:", value=10)
+# 1. Download and load your model from Hugging Face
+@st.cache_resource
+def load_models():
+  model_path = hf_hub_download(
+      repo_id="Shey77/my-large-model", filename="sliding_threshold_models.pkl"
+  )
+  return joblib.load(model_path)
 
-# 3. Run your Colab code when the button is clicked
-if st.button("Run Prediction"):
-  # --- PUT YOUR COLAB LOGIC HERE ---
-  # e.g., prediction = model.predict([[user_number]])
-  result = f"You typed '{user_text}' and your number doubled is {user_number * 2}"
 
-  # Display the output on the webpage
-  st.success(f"Result: {result}")
+with st.spinner("Downloading and loading model from Hugging Face..."):
+  models = load_models()
+
+st.success("✅ Model loaded successfully!")
+
+# Display what is inside the .pkl file so we can see its structure
+st.write("### Model Structure / Keys:")
+st.write(type(models))
+if isinstance(models, dict):
+  st.write("Dictionary keys:", list(models.keys()))
